@@ -8,6 +8,7 @@ local collections = require "collections.lua"
 local exports = {}
 
 local internals = {
+    tree = nil,
     points = nil,
     results = {},
 }
@@ -28,24 +29,48 @@ function exports.init(filename)
         table.insert(p, point)
     end
 
-    internals.points = collections.Kdtree:new(p)
+    internals.tree = collections.Kdtree:new(p)
+
+    table.sort(p, function(x, y) return x.rank < y.rank end)
+    internals.points = p
 end
 
 function exports.run(rects)
 
+    local threshold = 10000
+    local abs = math.abs
+    local function size(rect)
+        return abs(rect.hy - rect.ly) * abs(rect.hx - rect.lx)
+    end
+
     local internals = internals
     local table_insert = table.insert
+    local points = internals.points
 
     for i = 1, #rects do 
         local r = rects[i]
-        local result = collections.MagicHeap:new(20)
-        
-        internals.points:find(r, function(point)
-            result:insert(point.rank)
-        end)
+        if size(r) > threshold then
+            local result = {}
+            for i = 1, #points do
+                local p = points[i]
+                if r.lx <= p.x and p.x <= r.hx and r.ly <= p.y and p.y <= r.hy then
+                    table_insert(result, p.rank)
+                    if #result == 20 then
+                        break
+                    end
+                end
+            end
+            table_insert(internals.results, result)
+        else
+            local result = collections.MagicHeap:new(20)
+            
+            internals.tree:find(r, function(point)
+                result:insert(point.rank)
+            end)
 
-        result = result:sort()
-        table_insert(internals.results, result)
+            result = result:sort()
+            table_insert(internals.results, result)
+        end
     end
 end
 
