@@ -35,9 +35,10 @@ function exports.init(filename)
     internals.points = p
 end
 
+
 function exports.run(rects)
 
-    local threshold = 2000
+    local threshold = 10000
     local abs = math.abs
     local function size(rect)
         return abs(rect.hy - rect.ly) * abs(rect.hx - rect.lx)
