@@ -22,6 +22,10 @@ function MagicHeap:new(cap, cmp)
     return setmetatable(obj, self)
 end
 
+function MagicHeap:top()
+    return self.items[1]
+end
+
 function MagicHeap:_sift()
 
     local items = self.items
@@ -97,6 +101,7 @@ end
 local axis_map = {}
 axis_map[0] = 'x'
 axis_map[1] = 'y'
+axis_map[2] = 'rank'
 
 local Node = {}
 Node.__index = Node
@@ -110,37 +115,48 @@ function Node:new(point, left, right)
     return setmetatable(obj, self)
 end
 
-function find(tree, rect, callback, depth)
+function find(tree, rect, heap, depth)
 
     if tree == nil then
         return
     end
 
     depth = depth or 0
-    local axis = axis_map[depth % 2]
+    local axis = axis_map[depth % 3]
 
     local p = tree.point
     local r = rect
 
     if r.lx <= p.x and p.x <= r.hx and r.ly <= p.y and p.y <= r.hy then
-        callback(p)
+        heap:insert(p.rank)
     end
 
-    local max = 'h'..axis
-    local min = 'l'..axis
-   
-    if rect[min] <= p[axis] then
-        find(tree.left, rect, callback, depth +1)
+    if axis ~= 'rank' then
+        local max = 'h'..axis
+        local min = 'l'..axis
+       
+        if rect[min] <= p[axis] then
+            find(tree.left, rect, heap, depth +1)
+        end
+
+        if rect[max] > p[axis] then
+            find(tree.right, rect, heap, depth +1)
+        end
+    else
+        local top = heap:top()
+        find(tree.left, rect, heap, depth +1)
+        if (not top) or p.rank <= top then
+            find(tree.right, rect, heap, depth +1)
+        end
     end
 
-    if rect[max] > p[axis] then
-        find(tree.right, rect, callback, depth +1)
-    end
 
 end
 
-function Node:find(rect, cb)
-    return find(self, rect, cb)
+function Node:find(rect, points)
+    local h = MagicHeap:new(points)
+    find(self, rect, h)
+    return h:sort()
 end
 
 local Kdtree = {}
@@ -158,7 +174,7 @@ function Kdtree:new(points, depth)
 
     local median = math.ceil(len/2)
 
-    local axis = axis_map[depth % 2]
+    local axis = axis_map[depth % 3]
 
     table.sort(points, function(x, y) return x[axis] < y[axis] end)
 

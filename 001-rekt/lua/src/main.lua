@@ -52,7 +52,6 @@ function exports.run(rects)
 
     for i = 1, #rects do 
         local r = rects[i]
-        local start_time = os.clock()
         if size(r) > threshold then
             local result = {}
             for i = 1, #points do
@@ -66,19 +65,9 @@ function exports.run(rects)
             end
             table_insert(results, result)
         else
-            local result = MagicHeap:new(20)
-            
-            tree:find(r, function(point)
-                result:insert(point.rank)
-            end)
-
-            result = result:sort()
+            local result = tree:find(r, 20)
             table_insert(results, result)
         end
-        local end_time = os.clock()
-        print('---')
-        print('rect size: '..size(r))
-        print('time: '..((end_time - start_time) * 1000))
     end
 end
 
