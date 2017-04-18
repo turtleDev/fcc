@@ -11,6 +11,7 @@
 #include <lualib.h>
 
 #include "lsrc.h"
+#include "native.h"
 
 static lua_State *L = NULL;
 
@@ -37,6 +38,8 @@ void init(const char *filepath)
     }
 
     luaL_openlibs(L);
+
+    native_open_MagicHeap(L);
 
     if ( luaL_loadbuffer(L, lsrc, lsrc_len, "main.lua")  || lua_pcall(L, 0, LUA_MULTRET, 0) ) {
         fprintf(stderr, "error: can't load source\n");

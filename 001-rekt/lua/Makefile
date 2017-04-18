@@ -1,4 +1,4 @@
-CFLAGS=-I./ext/lua/src -c -fPIC
+CFLAGS=-I./ext/lua/src -fPIC
 LLIB=--whole-archive ./ext/lua/src/liblua.a -lm --no-whole-archive
 
 default: all
@@ -14,10 +14,9 @@ lsrc.h: src/main.lua lua
 	$(shell xxd -i lsrc lsrc.h)
 	$(shell rm -f lsrc)
 
-main.o: main.c lsrc.h lua
-	$(CC) $(CFLAGS) -o $@ $<
+main.o: main.c lsrc.h lua native.o
 
-librekt.so: main.o 
+librekt.so: main.o native.o
 	$(LD) $(LLIB) $^ -shared -o $@ 
 
 clean:
