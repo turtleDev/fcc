@@ -56,7 +56,7 @@ function exports.run(rects)
             local result = {}
             for i = 1, #points do
                 local p = points[i]
-                if r.lx <= p.x and p.x <= r.hx and r.ly <= p.y and p.y <= r.hy then
+                if r.lx <= p.x and p.x < r.hx and r.ly <= p.y and p.y < r.hy then
                     table_insert(result, p.rank)
                     if #result == 20 then
                         break

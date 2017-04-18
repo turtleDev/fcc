@@ -23,7 +23,10 @@ function MagicHeap:new(cap, cmp)
 end
 
 function MagicHeap:top()
-    return self.items[1]
+    if #self.items == self.cap then
+        return self.items[1]
+    end
+    return nil
 end
 
 function MagicHeap:_sift()
@@ -127,7 +130,7 @@ function find(tree, rect, heap, depth)
     local p = tree.point
     local r = rect
 
-    if r.lx <= p.x and p.x <= r.hx and r.ly <= p.y and p.y <= r.hy then
+    if r.lx <= p.x and p.x < r.hx and r.ly <= p.y and p.y < r.hy then
         heap:insert(p.rank)
     end
 
@@ -143,8 +146,8 @@ function find(tree, rect, heap, depth)
             find(tree.right, rect, heap, depth +1)
         end
     else
-        local top = heap:top()
         find(tree.left, rect, heap, depth +1)
+        local top = heap:top()
         if (not top) or p.rank <= top then
             find(tree.right, rect, heap, depth +1)
         end

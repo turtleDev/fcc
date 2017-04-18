@@ -9,7 +9,7 @@ lua:
 	cd ext/lua && $(MAKE) posix
 
 lsrc.h: src/main.lua lua
-	$(shell lua scripts/pack.lua src/main.lua)
+	$(shell ext/lua/src/lua scripts/pack.lua src/main.lua)
 	$(shell ext/lua/src/luac -o lsrc main.bundle.lua)
 	$(shell xxd -i lsrc lsrc.h)
 	$(shell rm -f lsrc)
