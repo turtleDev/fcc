@@ -42,7 +42,9 @@ void init(const char *filepath)
     native_open_MagicHeap(L);
 
     if ( luaL_loadbuffer(L, lsrc, lsrc_len, "main.lua")  || lua_pcall(L, 0, LUA_MULTRET, 0) ) {
-        fprintf(stderr, "error: can't load source\n");
+        /* fetch the error message off the stack */
+        const char *err = lua_tostring(L, -1);
+        fprintf(stderr, "error: %s\n", err);
         exit(-1);
     }
 
@@ -107,7 +109,7 @@ void run(struct Rect *rects, size_t size)
 
 void results(char *buffer)
 {
-    lua_getfield(L, 1, "results");
+    lua_getfield(L, -1, "results");
     if ( !lua_isfunction(L, -1) ) {
         fprintf(stderr, "error: results must be a function\n");
         exit(-1);
