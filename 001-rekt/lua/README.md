@@ -1,5 +1,7 @@
 # librekt.lua
 
-This is a boilerplate to create a lua wrapped in C implementation. 
+run `Make` to build the bundled lua source, then use the `runner.lua` from the base directory.
 
-edit `src/main.lua` and then run `make` to generate a `librekt.so`
+`luajit runner.lua <seed> lua/main.lua`
+
+requires luajit version >= 2
