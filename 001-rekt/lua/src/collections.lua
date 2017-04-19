@@ -102,9 +102,9 @@ end
 
 
 local axis_map = {}
-axis_map[0] = 'x'
-axis_map[1] = 'y'
-axis_map[2] = 'rank'
+axis_map[0] = 'y'
+axis_map[1] = 'rank'
+axis_map[2] = 'x'
 
 local Node = {}
 Node.__index = Node
@@ -165,7 +165,7 @@ end
 local Kdtree = {}
 Kdtree.__index = Kdtree
 exports.Kdtree = Kdtree
-function Kdtree:new(points, depth)
+function Kdtree:new(points, length, depth)
 
     depth = depth or 0
 
