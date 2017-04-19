@@ -80,6 +80,7 @@ function exports.results()
         end
         result = result .. "\n"
     end
+    io.open('results', 'w'):write(result)
     return result
 end
 

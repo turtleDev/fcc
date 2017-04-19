@@ -55,7 +55,7 @@ struct MagicHeap {
 /**
  * one extra member for keeping the last member
  */
-int MagicHeap_new(lua_State *L)
+static int MagicHeap_new(lua_State *L)
 {
     size_t capacity = luaL_checkint(L, 1);
     size_t cap = sizeof(struct MagicHeap) + capacity * sizeof(int64_t);
@@ -65,52 +65,81 @@ int MagicHeap_new(lua_State *L)
     return 1;
 }
 
-static void MagicHeap_insert(struct MagicHeap *self, int64_t data)
+static struct MagicHeap *getself(lua_State *L)
 {
+    struct MagicHeap *self = lua_touserdata(L, 1);
+    luaL_argcheck(L, self != NULL, 1, "MagicHeap object expected");
+    return self;
+}
+
+static int MagicHeap_insert(lua_State *L)
+{
+    struct MagicHeap *self = getself(L);
+    int64_t data = luaL_checkint(L, 2);
+
     self->data[self->len] = data;
     sift_up(self->data, self->len, self->max);
     self->len += 1;
     
-    if ( self->len == self->max ) {
+    if ( self->len > self->max ) {
         self->len -= 1;
         self->data[0] = self->data[self->len];
         sift_down(self->data, 0, self->max);
     }
+
+    return 0;
 }
 
-static bool MagicHeap_top(struct MagicHeap *self, int64_t *top)
+static int MagicHeap_top(lua_State *L)
 {
-    if ( (self->max - self->len) == 1 ) {
-        *top = self->data[0];
+    struct MagicHeap *self = getself(L);
+
+    if ( self->max == self->len ) {
+        lua_pushinteger(L, self->data[0]);
+    } else {
+        lua_pushnil(L);
     }
+
+    return 1;
 }
 
-static void MagicHeap_sort(struct MagicHeap *self)
+static int MagicHeap_sort(lua_State *L)
 {
-    size_t i = self->len;
+    struct MagicHeap *self = getself(L);
+    int64_t i = self->len -1;
+    if ( i < 0 ) {
+        lua_newtable(L);
+        return 1;
+    }
     int64_t tmp;
     int64_t *data = self->data;
     while ( i > 0 ) {
         tmp = data[i];
         data[i] = data[0];
         data[0] = tmp;
-        --i;
         sift_down(data, 0, i);
+        --i;
     }
+
+    lua_createtable(L, self->len, 0);
+
+    for ( i = 0; i < self->len; ++i ) {
+        lua_pushnumber(L, i+1);
+        lua_pushnumber(L, self->data[i]);
+        lua_settable(L, -3);
+    }
+
+    return 1;
 }
 
-static void pe(int64_t *v, int n) {
-    int i;
-    for ( i = 0; i < n; ++i ) {
-        printf("%ld ", v[i]);
-    }
-    printf("\n");
-}
 
-void native_open_MagicHeap(lua_State *L)
+void native_open(lua_State *L)
 { 
     luaL_Reg mp[] = {
-        { "MagicHeap", MagicHeap_new },
+        { "MagicHeap_new", MagicHeap_new },
+        { "MagicHeap_insert", MagicHeap_insert },
+        { "MagicHeap_top", MagicHeap_top },
+        { "MagicHeap_sort", MagicHeap_sort },
         { NULL, NULL }
     };
     

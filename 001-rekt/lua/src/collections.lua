@@ -124,6 +124,9 @@ function find(tree, rect, heap, depth)
         return
     end
 
+    local insert = native.MagicHeap_insert
+    local heaptop = native.MagicHeap_top
+
     depth = depth or 0
     local axis = axis_map[depth % 3]
 
@@ -131,7 +134,7 @@ function find(tree, rect, heap, depth)
     local r = rect
 
     if r.lx <= p.x and p.x < r.hx and r.ly <= p.y and p.y < r.hy then
-        heap:insert(p.rank)
+        insert(heap, p.rank)
     end
 
     if axis ~= 'rank' then
@@ -147,7 +150,7 @@ function find(tree, rect, heap, depth)
         end
     else
         find(tree.left, rect, heap, depth +1)
-        local top = heap:top()
+        local top = heaptop(heap)
         if (not top) or p.rank <= top then
             find(tree.right, rect, heap, depth +1)
         end
@@ -157,9 +160,9 @@ function find(tree, rect, heap, depth)
 end
 
 function Node:find(rect, points)
-    local h = MagicHeap:new(points)
+    local h = native.MagicHeap_new(points)
     find(self, rect, h)
-    return h:sort()
+    return native.MagicHeap_sort(h)
 end
 
 local Kdtree = {}

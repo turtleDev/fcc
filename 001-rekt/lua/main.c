@@ -38,8 +38,7 @@ void init(const char *filepath)
     }
 
     luaL_openlibs(L);
-
-    native_open_MagicHeap(L);
+    native_open(L);
 
     if ( luaL_loadbuffer(L, lsrc, lsrc_len, "main.lua")  || lua_pcall(L, 0, LUA_MULTRET, 0) ) {
         /* fetch the error message off the stack */

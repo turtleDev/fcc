@@ -3,6 +3,6 @@
 
 #include <lua.h>
 
-void native_open_MagicHeap(lua_State *L);
+void native_open(lua_State *L);
 
 #endif

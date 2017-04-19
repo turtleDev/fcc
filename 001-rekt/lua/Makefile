@@ -1,4 +1,4 @@
-CFLAGS=-I./ext/lua/src -fPIC
+CFLAGS=-I./ext/lua/src -fPIC -O3
 LLIB=--whole-archive ./ext/lua/src/liblua.a -lm --no-whole-archive
 
 default: all
