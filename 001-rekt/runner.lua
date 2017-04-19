@@ -31,10 +31,12 @@ function strip(s)
 
     while string.match(s:sub(start, start), "%s") do
         start = start +1
+        break
     end
 
     while string.match(s:sub(fin, fin), "%s") do
         fin = fin -1
+        break
     end
 
     return string.sub(start, fin)
