@@ -1,23 +1,12 @@
-CFLAGS=-I./ext/lua/src -fPIC -O3
-LLIB=--whole-archive ./ext/lua/src/liblua.a -lm --no-whole-archive
-
 default: all
 
-all: librekt.so
+all: main.lua
+	@echo build success
 
-lua:
-	cd ext/lua && $(MAKE) posix
+main.lua: src/main.lua 
+	$(shell luajit scripts/pack.lua src/main.lua)
+	$(shell mv main.bundle.lua main.lua)
 
-lsrc.h: src/main.lua lua
-	$(shell ext/lua/src/lua scripts/pack.lua src/main.lua)
-	$(shell ext/lua/src/luac -o lsrc main.bundle.lua)
-	$(shell xxd -i lsrc lsrc.h)
-	$(shell rm -f lsrc)
-
-main.o: main.c lsrc.h lua native.o
-
-librekt.so: main.o native.o
-	$(LD) $(LLIB) $^ -shared -o $@ 
 
 clean:
-	rm -f librekt.so *.o *.out lsrc.h *.bundle*
+	rm -f main.lua
