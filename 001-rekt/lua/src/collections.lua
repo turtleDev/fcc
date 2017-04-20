@@ -1,4 +1,5 @@
 
+local ffi = require "ffi"
 local utils = require "utils.lua"
 
 local exports = {}
@@ -127,7 +128,7 @@ function find(tree, rect, heap, depth)
     depth = depth or 0
     local axis = axis_map[depth % 3]
 
-    local p = tree.point
+    local p = tree[0].point
     local r = rect
 
     if r.lx <= p.x and p.x < r.hx and r.ly <= p.y and p.y < r.hy then
@@ -139,58 +140,64 @@ function find(tree, rect, heap, depth)
         local min = 'l'..axis
        
         if rect[min] <= p[axis] then
-            find(tree.left, rect, heap, depth +1)
+            find(tree[0].left, rect, heap, depth +1)
         end
 
         if rect[max] > p[axis] then
-            find(tree.right, rect, heap, depth +1)
+            find(tree[0].right, rect, heap, depth +1)
         end
     else
-        find(tree.left, rect, heap, depth +1)
+        find(tree[0].left, rect, heap, depth +1)
         local top = heap:top()
         if (not top) or p.rank <= top then
-            find(tree.right, rect, heap, depth +1)
+            find(tree[0].right, rect, heap, depth +1)
         end
     end
 
 
 end
 
-function Node:find(rect, points)
-    local h = MagicHeap:new(points)
-    find(self, rect, h)
-    return h:sort()
-end
 
 local Kdtree = {}
 Kdtree.__index = Kdtree
 exports.Kdtree = Kdtree
-function Kdtree:new(points, length, depth)
+function Kdtree:new(points, start, fin, depth)
+
+    assert(start)
+    assert(fin)
 
     depth = depth or 0
 
-    local len = #points
+    local len = fin - start
 
     if len == 0 then
         return nil
     end
 
-    local median = math.ceil(len/2)
+    local median = len/2
 
     local axis = axis_map[depth % 3]
 
-    table.sort(points, function(x, y) return x[axis] < y[axis] end)
+    local function cmp(x, y) return x[axis] < y[axis] end
+    local cb = ffi.cast('int (*)(Point *, Point *)', cmp)
 
+    local base = points[start]
+    ffi.C.qsort(base, len, ffi.sizeof('Point'), cb)
 
-    local slice = utils.slice
-    local left_subtree = slice(points, 1, median-1)
-    local right_subtree = slice(points, median+1)
+    local node = ffi.C.malloc(ffi.sizeof('Node'))
 
-    return Node:new(
-        points[median],
-        Kdtree:new(left_subtree, depth + 1),
-        Kdtree:new(right_subtree, depth + 1)
-    )
+    node = ffi.cast('Node *', node)
+    node[0].point = points[median]
+    node[0].left = Kdtree:new(points, start, median -1)
+    node[0].right = Kdtree:new(points, median+1, fin)
+
+    return node
+end
+
+function Kdtree:find(tree, rect, points)
+    local h = MagicHeap:new(points)
+    find(tree, rect, h)
+    return h:sort()
 end
 
 return exports
