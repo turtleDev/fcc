@@ -13,7 +13,6 @@ typedef struct _node {
     struct _node *right;
 } Node;
 
-
 void qsort(void *base, size_t nmemb, size_t size, int (*cmp)(const void *, const void*));
 
 void *malloc(size_t);

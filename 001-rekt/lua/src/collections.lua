@@ -107,6 +107,15 @@ axis_map[0] = 'y'
 axis_map[1] = 'rank'
 axis_map[2] = 'x'
 
+local axis_cmp = {}
+axis_cmp[0] = function(x, y) return x.y - y.y end
+axis_cmp[1] = function(x, y) return x.rank - y.rank end
+axis_cmp[2] = function(x, y) return x.x - y.x end
+
+for i = 0, 2 do
+    axis_cmp[i] = ffi.cast('int (*)(Point *, Point *)', axis_cmp[i])
+end
+
 local Node = {}
 Node.__index = Node
 
@@ -120,7 +129,6 @@ function Node:new(point, left, right)
 end
 
 function find(tree, rect, heap, depth)
-
     if tree == nil then
         return
     end
@@ -153,14 +161,13 @@ function find(tree, rect, heap, depth)
             find(tree[0].right, rect, heap, depth +1)
         end
     end
-
-
 end
 
 
 local Kdtree = {}
 Kdtree.__index = Kdtree
 exports.Kdtree = Kdtree
+--[[ start is inclusive, fin is exclusive ]]
 function Kdtree:new(points, start, fin, depth)
 
     assert(start)
@@ -170,26 +177,24 @@ function Kdtree:new(points, start, fin, depth)
 
     local len = fin - start
 
-    if len == 0 then
+    if len <= 0 then
         return nil
     end
 
-    local median = len/2
+    local median = start + math.floor(len/2)
 
     local axis = axis_map[depth % 3]
-
-    local function cmp(x, y) return x[axis] < y[axis] end
-    local cb = ffi.cast('int (*)(Point *, Point *)', cmp)
+    local cmp = axis_cmp[depth % 3]
 
     local base = points[start]
-    ffi.C.qsort(base, len, ffi.sizeof('Point'), cb)
+    ffi.C.qsort(base, len, ffi.sizeof('Point'), cmp)
 
     local node = ffi.C.malloc(ffi.sizeof('Node'))
 
     node = ffi.cast('Node *', node)
     node[0].point = points[median]
-    node[0].left = Kdtree:new(points, start, median -1)
-    node[0].right = Kdtree:new(points, median+1, fin)
+    node[0].left = Kdtree:new(points, start, median, depth + 1)
+    node[0].right = Kdtree:new(points, median+1, fin, depth + 1)
 
     return node
 end
