@@ -170,9 +170,6 @@ exports.Kdtree = Kdtree
 --[[ start is inclusive, fin is exclusive ]]
 function Kdtree:new(points, start, fin, depth)
 
-    assert(start)
-    assert(fin)
-
     depth = depth or 0
 
     local len = fin - start
