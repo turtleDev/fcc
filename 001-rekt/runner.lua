@@ -47,7 +47,7 @@ function main(argv)
     local seed = argv[1]
     local program_file = argv[2]
     assert(seed and program_file, string.format('usage: %s SEED PROGRAM', argv[0]))
-    program = assert(loadfile(program_file)())
+    program = assert(loadfile(program_file))()
     local points_file = seed..'-points.txt'
     local rects_file = seed..'-rects.txt'
     local results_file = seed..'-results.txt'
