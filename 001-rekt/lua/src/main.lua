@@ -62,35 +62,24 @@ end
 
 
 function exports.run(rects)
-
-    local threshold = 10000
-    local abs = math.abs
-    local function size(rect)
-        return abs(rect.hy - rect.ly) * abs(rect.hx - rect.lx)
-    end
-
-    local table_insert = table.insert
-    local points = internals.points
-    local results = internals.results
-    local tree = internals.tree
-
     for i = 1, #rects do 
         local r = rects[i]
-        if size(r) > threshold then
-            local result = {}
-            for i = 1, internals.points_len do
-                local p = points[i]
-                if r.lx <= p.x and p.x < r.hx and r.ly <= p.y and p.y < r.hy then
-                    table_insert(result, p.rank)
-                    if #result == 20 then
-                        break
-                    end
-                end
+        local result = collections.MagicHeap:new(20)
+        local skip_tree = false
+        for i = 1, 4096 do
+            local p = internals.points[i]
+            if r.lx <= p.x and p.x < r.hx and r.ly <= p.y and p.y < r.hy then
+                result:insert(p.rank)
             end
-            table_insert(results, result)
-        else
-            local result = collections.Kdtree:find(tree, r, 20)
-            table_insert(results, result)
+            if result:top() then
+                table.insert(internals.results, result:sort())
+                skip_tree = true
+                break
+            end
+        end
+        if not skip_tree then
+            collections.Kdtree:find(internals.tree, r, result)
+            table.insert(internals.results, result:sort())
         end
     end
 end

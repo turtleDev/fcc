@@ -63,7 +63,21 @@ function MagicHeap:_sift()
     end
 end
 
+function MagicHeap:_find(item, node)
+
+    for i = 1, self.len do
+        if self.items[i] == node then
+            return true
+        end
+    end
+    return false
+end
+
 function MagicHeap:insert(item)
+
+    if self:_find(item) then
+        return
+    end
 
     local items = self.items
     self.len = self.len + 1
@@ -196,10 +210,8 @@ function Kdtree:new(points, start, fin, depth)
     return node
 end
 
-function Kdtree:find(tree, rect, points)
-    local h = MagicHeap:new(points)
-    find(tree, rect, h)
-    return h:sort()
+function Kdtree:find(tree, rect, heap)
+    find(tree, rect, heap)
 end
 
 return exports
