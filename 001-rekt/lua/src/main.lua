@@ -100,7 +100,7 @@ function exports.results()
     for i = 1, #internals.results do
         local line = internals.results[i]
         for k, v in ipairs(line) do
-            result = result  .. tostring(v) .. " "
+            result = result  .. tonumber(v) .. " "
         end
         result = result .. "\n"
     end
