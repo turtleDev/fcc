@@ -108,9 +108,9 @@ axis_map[1] = 'rank'
 axis_map[2] = 'x'
 
 local axis_cmp = {}
-axis_cmp[0] = function(x, y) return x.y - y.y end
-axis_cmp[1] = function(x, y) return x.rank - y.rank end
-axis_cmp[2] = function(x, y) return x.x - y.x end
+axis_cmp[0] = function(a, b) return a.y < b.y and -1 or 1 end
+axis_cmp[1] = function(a, b) return a.rank - b.rank end
+axis_cmp[2] = function(a, b) return a.x < b.x and -1 or 1 end
 
 for i = 0, 2 do
     axis_cmp[i] = ffi.cast('int (*)(Point *, Point *)', axis_cmp[i])
