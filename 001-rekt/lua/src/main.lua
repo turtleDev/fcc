@@ -46,7 +46,7 @@ function exports.init(filename)
     ffi.copy(t, p, ffi.sizeof('Point') * n)
 
     -- build the tree
-    internals.tree = collections.Kdtree:new(t, 0, n)
+    internals.tree = collections.Kdtree:new(t, n)
 
     local function cmp(x, y)
         return x[0].rank - y[0].rank

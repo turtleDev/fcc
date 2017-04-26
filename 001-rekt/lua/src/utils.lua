@@ -1,8 +1,8 @@
+--[[
+    utils -- misc utilities
+]]
 local exports = {}
 
---[[
-  not the best algorithm to split a string
-]]
 exports.split = function(str, delim)
 
     assert(str ~= nil)

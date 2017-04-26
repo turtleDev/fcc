@@ -1,3 +1,7 @@
+--[[
+    type definitions
+]]
+
 local ffi = require "ffi"
 
 ffi.cdef [[

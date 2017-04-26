@@ -1,3 +1,6 @@
+--[[
+    collections -- data structures
+]]
 
 local ffi = require "ffi"
 local utils = require "utils.lua"
@@ -7,6 +10,44 @@ local exports = {}
 local MagicHeap = {}
 MagicHeap.__index = MagicHeap
 exports.MagicHeap = MagicHeap
+
+--[[
+    MagicHeap -- A presized heap
+    
+    MagicHeap has a limit on the number of elements that can be inserted
+    into it. When the heap is full and a new element is inserted, it inserts
+    the new element into place, and one of the other nodes is removed. 
+
+    Internally, it always keeps an extra slot to make this insertion/removal
+    possible.
+
+    Methods:
+
+    MagicHeap:new(capacity, comparator)
+        constructor -- creates a new instance of MagicHeap
+
+        @param capacity {number} the heap capacity, 
+        @param comparator {function(a, b)} The comparator function
+        @returns {MagicHeap}
+
+    MagicHeap:top()
+        returns the the root of the heap
+
+        @returns {any}
+
+    MagicHeap:insert(element)
+        insert an element into the heap
+
+        @param element {any}
+
+    MagicHeap:sort()
+        Sort the heap using heapsort algorithm and return a table containing
+        the sorted elements.
+
+        note: the current implementation is destructive in the sense that the
+        object because unusable after MagicHeap:sort() method is called.
+]]
+
 
 function default_cmp(x, y)
     return x > y
@@ -130,18 +171,6 @@ for i = 0, 2 do
     axis_cmp[i] = ffi.cast('int (*)(Point *, Point *)', axis_cmp[i])
 end
 
-local Node = {}
-Node.__index = Node
-
-function Node:new(point, left, right)
-    local obj = {
-        point = point,
-        left = left,
-        right = right
-    }
-    return setmetatable(obj, self)
-end
-
 function find(tree, rect, heap, depth)
     if tree == nil then
         return
@@ -177,12 +206,13 @@ function find(tree, rect, heap, depth)
     end
 end
 
-
 local Kdtree = {}
 Kdtree.__index = Kdtree
 exports.Kdtree = Kdtree
---[[ start is inclusive, fin is exclusive ]]
-function Kdtree:new(points, start, fin, depth)
+
+function load_tree(points, start, fin, depth)
+
+    -- we slice into the points table to build our tree. 
 
     depth = depth or 0
 
@@ -204,10 +234,47 @@ function Kdtree:new(points, start, fin, depth)
 
     node = ffi.cast('Node *', node)
     node[0].point = points[median]
-    node[0].left = Kdtree:new(points, start, median, depth + 1)
-    node[0].right = Kdtree:new(points, median+1, fin, depth + 1)
+    node[0].left = load_tree(points, start, median, depth + 1)
+    node[0].right = load_tree(points, median+1, fin, depth + 1)
 
     return node
+end
+
+--[[ 
+    A kdtree implementation that can be bulkloaded.
+
+    The tree is specific to searching Point(x, y, rank) nodes, i.e. it's
+    not a generic kdtree.
+    
+    Methods:
+
+    Kdtree:new(points)
+        constructor -- bulk load a kdtree    
+
+        @param points {ctype(Points *)} points to load
+        @param len {number} length of the array
+
+
+    Kdtree:find(tree, rect, heap)
+        Find 20 top ranked nodes in the current tree, using heap
+        to store intermediate result(s).
+
+        @param tree {Kdtree} kdtree instance
+        @param rect {Rect} A table with lx, hx, ly and hy values
+        @param heap {MagicHeap} magicheap instance
+
+        The heap is also used to optimize search, so when possible, 
+        load it up with as many top ranked points as you can.
+
+
+    Note: The built kdtree uses ffi interface to create a binary tree.
+    Hence it doesn't directly support any methods; you have to pass the
+    tree to method(s) manually (think of it like class methods you pass
+    instances to)
+]]
+
+function Kdtree:new(points, len)
+    return load_tree(points, 0, len)
 end
 
 function Kdtree:find(tree, rect, heap)
