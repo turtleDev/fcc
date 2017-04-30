@@ -64,7 +64,6 @@ end
 function exports.run(rects)
     for i = 1, #rects do 
         local r = rects[i]
-        local result = collections.MagicHeap:new(20)
         local presearch = {}
         local presearch_len = 0
         local skip_tree = false
@@ -81,8 +80,8 @@ function exports.run(rects)
             end
         end
         if not skip_tree then
-            collections.Kdtree:find(internals.tree, r, result)
-            table.insert(internals.results, result:sort())
+            local result = internals.tree:find(r)
+            table.insert(internals.results, result)
         end
     end
 end

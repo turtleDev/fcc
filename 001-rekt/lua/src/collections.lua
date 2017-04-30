@@ -255,30 +255,28 @@ end
         @param len {number} length of the array
 
 
-    Kdtree:find(tree, rect, heap)
+    Kdtree:find(rect)
         Find 20 top ranked nodes in the current tree, using heap
         to store intermediate result(s).
 
-        @param tree {Kdtree} kdtree instance
         @param rect {Rect} A table with lx, hx, ly and hy values
-        @param heap {MagicHeap} magicheap instance
 
         The heap is also used to optimize search, so when possible, 
         load it up with as many top ranked points as you can.
-
-
-    Note: The built kdtree uses ffi interface to create a binary tree.
-    Hence it doesn't directly support any methods; you have to pass the
-    tree to method(s) manually (think of it like class methods you pass
-    instances to)
 ]]
 
 function Kdtree:new(points, len)
-    return load_tree(points, 0, len)
+    local obj = {
+        root = load_tree(points, 0, len)
+    }
+    setmetatable(obj, self)
+    return obj
 end
 
-function Kdtree:find(tree, rect, heap)
-    find(tree, rect, heap)
+function Kdtree:find(rect)
+    local heap = MagicHeap:new(20)
+    find(self.root, rect, heap)
+    return heap:sort()
 end
 
 return exports
