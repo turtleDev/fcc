@@ -64,11 +64,23 @@ function MagicHeap:new(cap, cmp)
     return setmetatable(obj, self)
 end
 
-function MagicHeap:top()
-    if #self.items == self.cap then
-        return self.items[1]
+function MagicHeap:bounds()
+
+    local top, bottom
+    if #self.items < self.cap then
+        return nil
     end
-    return nil
+    top = self.items[1]
+    local i = math.floor(self.cap/2)
+    bottom = self.items[i]
+    while i <= self.cap do
+        if self.cmp(bottom, self.items[i]) then
+            bottom = self.items[i]
+        end
+        i = i + 1
+    end
+
+    return top, bottom
 end
 
 function MagicHeap:_sift()
@@ -104,21 +116,7 @@ function MagicHeap:_sift()
     end
 end
 
-function MagicHeap:_find(item, node)
-
-    for i = 1, self.len do
-        if self.items[i] == node then
-            return true
-        end
-    end
-    return false
-end
-
 function MagicHeap:insert(item)
-
-    if self:_find(item) then
-        return
-    end
 
     local items = self.items
     self.len = self.len + 1
@@ -191,17 +189,19 @@ function find(tree, rect, heap, depth)
         local min = 'l'..axis
        
         if rect[min] <= p[axis] then
-            find(tree[0].left, rect, heap, depth +1)
+            find(tree[0].left, rect, heap, depth + 1)
         end
 
         if rect[max] > p[axis] then
-            find(tree[0].right, rect, heap, depth +1)
+            find(tree[0].right, rect, heap, depth + 1)
         end
     else
-        find(tree[0].left, rect, heap, depth +1)
-        local top = heap:top()
+        local top, bottom = heap:bounds()
+        if (not bottom) or p.rank < bottom then
+            find(tree[0].left, rect, heap, depth + 1)
+        end
         if (not top) or p.rank <= top then
-            find(tree[0].right, rect, heap, depth +1)
+            find(tree[0].right, rect, heap, depth + 1)
         end
     end
 end

@@ -65,14 +65,17 @@ function exports.run(rects)
     for i = 1, #rects do 
         local r = rects[i]
         local result = collections.MagicHeap:new(20)
+        local presearch = {}
+        local presearch_len = 0
         local skip_tree = false
         for i = 1, 4096 do
             local p = internals.points[i]
             if r.lx <= p.x and p.x < r.hx and r.ly <= p.y and p.y < r.hy then
-                result:insert(p.rank)
+                table.insert(presearch, p.rank)
+                presearch_len = presearch_len + 1
             end
-            if result:top() then
-                table.insert(internals.results, result:sort())
+            if presearch_len == 20 then
+                table.insert(internals.results, presearch)
                 skip_tree = true
                 break
             end
