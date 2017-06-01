@@ -1,14 +1,8 @@
-# Devs and Hackers fast code contests
+# What?
+My submission for the [dh-fastest-code-contest](https://github.com/rep-movsd/dh-fast-code-contest)
 
-This is the repository for the code related to contests in the #codefights channel of https://dev-s.slack.com
+# why?
+In the words of our lord and saviour Ash Ketchem, "gotta catch em all, (algorithms)"
 
-Fastest code wins - because whats the point of correct code if it misses the bus?
-
-###  Contest #1:
-REKT 
-
-April 1st to 30th 2017 
-
-1 week grace period for stragglers
-
-
+# How
+I'm using two algorithms simultaneously: linear probe and kd-tree based range lookup. I've done some thresholding and fine-tuning, and I think the current implementation gives a well rounded performance for most of the seeds. I wanted it to be much more faster, but alas, I'm still nowhere near the speeds of compiled language implementations. 
