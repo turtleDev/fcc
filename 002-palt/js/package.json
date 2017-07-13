@@ -1,0 +1,14 @@
+{
+  "name": "turtldev-palt",
+  "version": "0.0.1",
+  "description": "turtledev's submission for dh-fast-code-contest",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Saravjeet 'Aman' Singh",
+  "license": "MIT",
+  "dependencies": {
+    "yargs": "^8.0.2"
+  }
+}
