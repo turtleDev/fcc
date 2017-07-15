@@ -1,6 +1,15 @@
 'use strict';
 
+/**
+ * @class Pixel
+ */
 class Pixel {
+  /**
+   * constructor
+   * @param {Number} red 
+   * @param {Number} green 
+   * @param {Number} blue 
+   */
   constructor(red, green, blue) {
     this.red = red;
     this.green = green;

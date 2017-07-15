@@ -22,31 +22,11 @@ function loadPixelFile(source) {
   })
 }
 
-if ( require.main === module ) {
-  const { argv } = process;
-  if ( argv.length != 4 ) {
-    const programName = Path.basename(argv[1]);
-    console.error(`usage: ${programName} palette-file image-file`);
-    process.exit(-1);
-  }
-
-  const paletteSource = argv[2];
-  const imageSource = argv[3];
-
-  const palette = loadPixelFile(paletteSource);
-  const image = loadPixelFile(imageSource);
-  const result = image.map(pixel => {
-    let idx = 0;
-    let value = pixel.distance(palette[0]);
-    for ( let i = 0; i < palette.length; ++i ) {
-      const d =  pixel.distance(palette[i]);
-      if ( d < value ) {
-        idx = i;
-        value = d;
-      }
-    }
-    return idx;
-  });
-
+function main(config) {
+  const palette = loadPixelFile(config.paletteFile);
+  const image = loadPixelFile(config.imageFile);
+  const result = config.method(image, palette);
   console.log(result.join('\n'));
 }
+
+module.exports = main;
