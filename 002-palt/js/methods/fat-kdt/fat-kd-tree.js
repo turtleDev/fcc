@@ -8,27 +8,30 @@ const Pixel = require('../../pixel');
 class Node {
   /**
    * constructor
-   * @param {Number} value 
+   * @param {Pixel} value 
    * @param {Node} left 
    * @param {Node} right 
+   * @param {Pixel[] | null} dataset
    */
-  constructor(value, left, right) {
+  constructor(value, left, right, dataset = null) {
     this.value = value;
     this.left = left;
     this.right = right;
+    this.dataset = dataset;
   }
 }
 
 /**
  * @class KDTree
  */
-class KDTree {
+class FatKDTree {
   /**
    * constructor
    * @param {Pixel[]} points dataset
    * @param {String[]} planes planes to split on (property name)
+   * @param {Number} depth maximum height of the tree
    */
-  constructor(points, planes) {
+  constructor(points, planes, maxDepth = 10) {
 
     function build(points, depth = 0) {
 
@@ -36,7 +39,11 @@ class KDTree {
         return null;
       }
 
-      if ( points.length == 1 ) {
+      if ( depth === maxDepth ) {
+        return new Node(points[0], null, null, points);
+      }
+
+      if ( points.length === 1 ) {
         return new Node(points[0], null, null);
       }
 
@@ -63,6 +70,7 @@ class KDTree {
     }
     this.tree = build(points);
     this.planes = planes;
+    this.maxDepth = maxDepth;
   }
 
   /**
@@ -71,19 +79,34 @@ class KDTree {
    * @return {Pixel}
    */
   findNN(target) {
-    function find(node, planes, depth = 0) {
+    const find = (node, planes, depth = 0) => {
       const planeIdx = depth % planes.length;
       const plane = planes[planeIdx];
-      if ( node.left && target[plane] < node.value[plane] ) {
+
+      if ( depth === this.maxDepth ) {
+
+        const { dataset } = node;
+        let idx = 0;
+        let min = dataset[0].distance(target);
+        for ( let i = 1; i < dataset.length; ++i ) {
+          const d = dataset[i].distance(target);
+          if ( d < min ) {
+            idx = i;
+            min = d;
+          }
+        }
+        return dataset[idx];
+
+      } else if ( node.left && target[plane] < node.value[plane] ) {
         return find(node.left, planes, depth + 1);
       } else if ( node.right ) {
         return find(node.right, planes, depth + 1);
       } else {
         return node.value;
       }
-    }
+    };
     return find(this.tree, this.planes);
   }
 }
 
-module.exports = KDTree;
+module.exports = FatKDTree;

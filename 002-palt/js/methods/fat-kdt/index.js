@@ -1,15 +1,14 @@
 'use strict';
 
-const KDTree = require('./kd-tree');
-
+const FatKDTree = require('./fat-kd-tree');
 /**
  * kd-tree based nearest neighbour search 
  * @param {Pixel[]} image 
  * @param {Pixel[]} palette 
  * @returns {Number[]}
  */
-function kdt(image, palette) {
-  const searchTree = new KDTree(palette, ['red', 'green', 'blue']);
+function fatKdt(image, palette) {
+  const searchTree = new FatKDTree(palette, ['red', 'green', 'blue'], 5)
   const idxMap = new Map();
   palette.map((palem, idx) => {
     idxMap.set(palem, idx);
@@ -20,4 +19,4 @@ function kdt(image, palette) {
   })
 }
 
-module.exports = kdt;
+module.exports = fatKdt;
