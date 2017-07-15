@@ -1,7 +1,8 @@
 'use strict';
 
 /**
- * A stub implementation, in order to check parsing speed.
+ * A stub implementation.
+ * useful for checkint parsing speeds.
  * @param {Pixel[]} image 
  * @param {Pixel[]} palette 
  */

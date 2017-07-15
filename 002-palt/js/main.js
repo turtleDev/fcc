@@ -17,8 +17,8 @@ function loadPixelFile(source) {
   .split('\n')
   .filter(x => x)
   .map(row => {
-    const [r, g, b] = row.split(' ').map(Number);
-    return new Pixel(r, g, b);
+    const [_, r, g, b] = /(\d+) (\d+) (\d+)/.exec(row);
+    return new Pixel(+r, +g, +b);
   })
 }
 
