@@ -12,10 +12,9 @@ const Pixel = require('./pixel');
  * @returns {Array}
  */
 function loadPixelFile(source) {
-  return Fs.readFileSync(source)
+  Fs.readFileSync(source)
   .toString()
-  .split('\n')
-  .filter(x => x)
+  .match(/(.+)/g)
   .map(row => {
     const [_, r, g, b] = /(\d+) (\d+) (\d+)/.exec(row);
     return new Pixel(+r, +g, +b);
