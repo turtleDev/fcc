@@ -18,4 +18,18 @@ const Pixel = require('../../pixel');
   }
 })();
 
+(function lessSimpleTest() {
+  const dataset = [
+    new Pixel(255, 255, 255),
+    new Pixel(100, 100, 100),
+    new Pixel(0, 0, 0)
+  ]
+  const points = dataset.slice();
+  const kdt = new KDTree(points, ['red', 'green', 'blue']);
+  const nn = kdt.findNN(new Pixel(111, 111, 111))
+  if ( nn != dataset[1] ) {
+    throw new Error('failed');
+  }
+})();
+
 console.log('All Tests were passed');

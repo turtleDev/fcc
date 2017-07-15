@@ -47,8 +47,14 @@ class KDTree {
       const medianIdx = Math.floor(points.length / 2);
       const median = points[medianIdx];
 
+      /**
+       * points smaller than the current node lie in the
+       * left subtree, while points _greater than or equal_
+       * to the current node lie on the right subtree.
+       */
       const left = points.slice(0, medianIdx);
       const right = points.slice(medianIdx);
+
       return new Node(
         median,
         build(left, depth + 1),
@@ -56,6 +62,27 @@ class KDTree {
       );
     }
     this.tree = build(points);
+    this.planes = planes;
+  }
+
+  /**
+   * find the nearest point to the target
+   * @param {Pixel} target 
+   * @return {Pixel}
+   */
+  findNN(target) {
+    function find(node, planes, depth = 0) {
+      const planeIdx = depth % planes.length;
+      const plane = planes[planeIdx];
+      if ( node.left && target[plane] < node.value[plane] ) {
+        return find(node.left, planes, depth + 1);
+      } else if ( node.right ) {
+        return find(node.right, planes, depth + 1);
+      } else {
+        return node.value;
+      }
+    }
+    return find(this.tree, this.planes);
   }
 }
 
