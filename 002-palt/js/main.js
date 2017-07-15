@@ -12,7 +12,7 @@ const Pixel = require('./pixel');
  * @returns {Array}
  */
 function loadPixelFile(source) {
-  Fs.readFileSync(source)
+  return Fs.readFileSync(source)
   .toString()
   .match(/(.+)/g)
   .map(row => {
@@ -24,7 +24,12 @@ function loadPixelFile(source) {
 function main(config) {
   const palette = loadPixelFile(config.paletteFile);
   const image = loadPixelFile(config.imageFile);
+  const starttime = +new Date();
   const result = config.method(image, palette);
+  const endtime = +new Date();
+  const runtime = endtime - starttime;
+  console.error(`${runtime} ms elapsed`);
+  console.error(`${runtime/image.length} ms per pixel`)
   console.log(result.join('\n'));
 }
 
