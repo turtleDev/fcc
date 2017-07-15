@@ -15,7 +15,6 @@ class Node {
     this.value = value;
     this.left = left;
     this.right = right;
-    this.leaf = leaf;
   }
 }
 
@@ -37,7 +36,7 @@ class KDTree {
       }
 
       if ( points.length == 1 ) {
-        return new Node(points[0], null, null, true);
+        return new Node(points[0], null, null);
       }
 
       const planeIdx = depth % planes.length;
