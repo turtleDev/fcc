@@ -4,20 +4,23 @@ const KDTree = require('./kd-tree');
 
 /**
  * kd-tree based nearest neighbour search 
- * @param {Pixel[]} image 
- * @param {Pixel[]} palette 
- * @returns {Number[]}
  */
-function kdt(image, palette) {
-  const searchTree = new KDTree(palette, ['red', 'green', 'blue']);
-  const idxMap = new Map();
-  palette.map((palem, idx) => {
-    idxMap.set(palem, idx);
-  });
-  return image.map(target => {
-    const point = searchTree.findNN(target);
-    return idxMap.get(point);
-  })
+class NNSearch {
+  constructor() {
+    this.searchTree = null;
+    this.palette = null
+  }
+  init(palette) {
+    this.searchTree = new KDTree(palette, ['red', 'green', 'blue']);
+    this.idxMap = new Map();
+    palette.forEach((palem, idx) => this.idxMap.set(palem, idx));
+  }
+  run(image) {
+    return image.map(target => {
+      const point = this.searchTree.findNN(target);
+      return this.idxMap.get(point);
+    });
+  }
 }
 
-module.exports = kdt;
+module.exports = NNSearch;

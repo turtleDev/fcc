@@ -7,16 +7,23 @@ const FatKDTree = require('./fat-kd-tree');
  * @param {Pixel[]} palette 
  * @returns {Number[]}
  */
-function fatKdt(image, palette) {
-  const searchTree = new FatKDTree(palette, ['red', 'green', 'blue'], 5)
-  const idxMap = new Map();
-  palette.map((palem, idx) => {
-    idxMap.set(palem, idx);
-  });
-  return image.map(target => {
-    const point = searchTree.findNN(target);
-    return idxMap.get(point);
-  })
+
+class FatNNSearch {
+  constructor() {
+    this.searchTree = null;
+    this.palette = null
+  }
+  init(palette) {
+    this.searchTree = new FatKDTree(palette, ['red', 'green', 'blue'], 5);
+    this.idxMap = new Map();
+    palette.forEach((palem, idx) => this.idxMap.set(palem, idx));
+  }
+  run(image) {
+    return image.map(target => {
+      const point = this.searchTree.findNN(target);
+      return this.idxMap.get(point);
+    });
+  }
 }
 
-module.exports = fatKdt;
+module.exports = FatNNSearch;

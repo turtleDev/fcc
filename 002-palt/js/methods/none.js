@@ -1,13 +1,17 @@
 'use strict';
 
+const Pixel = require('../pixel');
+
 /**
  * A stub implementation.
  * useful for checkint parsing speeds.
- * @param {Pixel[]} image 
- * @param {Pixel[]} palette 
+ * @class none
  */
-function none(image, palette) {
-  return [];
+class none {
+  init() {}
+  run(image) {
+    return [];
+  }
 }
 
 module.exports = none;
