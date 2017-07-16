@@ -4,7 +4,7 @@ const Pixel = require('../pixel');
 
 /**
  * A stub implementation.
- * useful for checkint parsing speeds.
+ * useful for checking parsing speeds.
  * @class none
  */
 class none {
