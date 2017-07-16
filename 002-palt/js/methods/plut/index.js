@@ -19,46 +19,31 @@ class PlutSearch {
     this.GBLut = new PLUT(palette, ['green', 'blue']);
     this.palette = palette;
   }
+
   run(image) {
-    return image.map(pixel => {
+    const result = Array(image.length);
+    for ( let i = 0; i < image.length; ++i ) {
+      const pixel = image[i];
       const rg = this.RGLut[pixel.red][pixel.green];
       const rb = this.RBLut[pixel.red][pixel.blue];
       const gb = this.RBLut[pixel.green][pixel.blue];
 
-      const min = [rg, rb, gb].reduce((min, cur) => {
-        const d = this.palette[cur].distance(pixel);
-        if ( d < min.distance ) {
-          min.distance = d;
-          min.value = cur;
-        }
-        return min;
-      }, {
-        distance: this.palette[rg].distance(pixel),
-        value: rg
-      });
+      const d1 = this.palette[rg].distance(pixel);
+      const d2 = this.palette[rb].distance(pixel);
+      const d3 = this.palette[gb].distance(pixel);
 
-      return min.value;
+      if ( d1 < d2 && d1 < d3 ) {
+        result[i] = rg;
+      } else if( d2 < d1 && d2 < d3 ) {
+        result[i] = rb;
+      } else if ( d3 < d1 && d3 < d2 ) {
+        result[i] = gb;
+      } else {
+        result[i] = rb;
+      }
+    }
 
-      // a faster, less accurate alternative
-      //
-      // const d1 = palette[rg].distance(pixel);
-      // const d2 = palette[rb].distance(pixel);
-      // const d3 = palette[gb].distance(pixel);
-
-      // if ( d1 < d2 && d1 < d3 ) {
-      //   return rg;
-      // }
-
-      // if( d2 < d1 && d2 < d3 ) {
-      //   return rb;
-      // }
-
-      // if ( d3 < d1 && d3 < d2 ) {
-      //   return gb;
-      // }
-
-      // return rb;
-    });
+    return result;
   }
 }
 

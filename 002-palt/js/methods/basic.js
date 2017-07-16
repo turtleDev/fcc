@@ -10,18 +10,21 @@ class Basic {
   constructor() { this.palette = null; }
   init(palette) { this.palette = palette }
   run(image) {
-    return image.map(pixel => {
+    const result = Array(image.length);
+    for ( let i = 0; i < image.length; ++i ) {
+      const pixel = image[i];
       let idx = 0;
       let value = pixel.distance(this.palette[0]);
-      for ( let i = 0; i < this.palette.length; ++i ) {
-        const d =  pixel.distance(this.palette[i]);
+      for ( let j = 0; j < this.palette.length; ++j ) {
+        const d =  pixel.distance(this.palette[j]);
         if ( d < value ) {
-          idx = i;
+          idx = j;
           value = d;
         }
       }
-      return idx;
-    });
+      result[i] = idx;
+    }
+    return result;
   }
 }
 

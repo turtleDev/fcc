@@ -19,10 +19,12 @@ class FatNNSearch {
     palette.forEach((palem, idx) => this.idxMap.set(palem, idx));
   }
   run(image) {
-    return image.map(target => {
-      const point = this.searchTree.findNN(target);
-      return this.idxMap.get(point);
-    });
+    const result = Array(image.length);
+    for ( let i = 0; i < image.length; ++i ) {
+      const point = this.searchTree.findNN(image[i]);
+      result[i] = this.idxMap.get(point);
+    }
+    return result;
   }
 }
 
