@@ -71,18 +71,25 @@ class KDTree {
    * @return {Pixel}
    */
   findNN(target) {
-    function find(node, planes, depth = 0) {
-      const planeIdx = depth % planes.length;
-      const plane = planes[planeIdx];
+    let depth = 0;
+    let node = this.tree;
+    let planes = this.planes;
+    let planeIdx, plane;
+    while ( true ) {
+      planeIdx = depth % planes.length;
+      plane = planes[planeIdx];
+
+      // increment depth
+      depth++;
+
       if ( node.left && target[plane] < node.value[plane] ) {
-        return find(node.left, planes, depth + 1);
+        node = node.left;
       } else if ( node.right ) {
-        return find(node.right, planes, depth + 1);
+        node = node.right
       } else {
         return node.value;
       }
     }
-    return find(this.tree, this.planes);
   }
 }
 

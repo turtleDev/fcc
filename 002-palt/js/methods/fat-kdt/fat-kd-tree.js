@@ -79,12 +79,45 @@ class FatKDTree {
    * @return {Pixel}
    */
   findNN(target) {
-    const find = (node, planes, depth = 0) => {
-      const planeIdx = depth % planes.length;
-      const plane = planes[planeIdx];
+    // const find = (node, planes, depth = 0) => {
+    //   const planeIdx = depth % planes.length;
+    //   const plane = planes[planeIdx];
 
-      if ( depth === this.maxDepth ) {
+    //   if ( depth === this.maxDepth ) {
 
+    //     const { dataset } = node;
+    //     let idx = 0;
+    //     let min = dataset[0].distance(target);
+    //     for ( let i = 1; i < dataset.length; ++i ) {
+    //       const d = dataset[i].distance(target);
+    //       if ( d < min ) {
+    //         idx = i;
+    //         min = d;
+    //       }
+    //     }
+    //     return dataset[idx];
+
+    //   } else if ( node.left && target[plane] < node.value[plane] ) {
+    //     return find(node.left, planes, depth + 1);
+    //   } else if ( node.right ) {
+    //     return find(node.right, planes, depth + 1);
+    //   } else {
+    //     return node.value;
+    //   }
+    // };
+    // return find(this.tree, this.planes);
+
+    let depth = 0;
+    let node = this.tree;
+    let planes = this.planes;
+    const maxDepth = this.maxDepth;
+    let planeIdx, plane;
+
+    while ( true ) {
+      planeIdx = depth % planes.length;
+      plane = planes[planeIdx];
+
+      if ( depth === maxDepth ) {
         const { dataset } = node;
         let idx = 0;
         let min = dataset[0].distance(target);
@@ -97,15 +130,18 @@ class FatKDTree {
         }
         return dataset[idx];
 
-      } else if ( node.left && target[plane] < node.value[plane] ) {
-        return find(node.left, planes, depth + 1);
+      }
+      
+      depth++;
+
+      if ( node.left && target[plane] < node.value[plane] ) {
+        node = node.left;
       } else if ( node.right ) {
-        return find(node.right, planes, depth + 1);
+        node = node.right
       } else {
         return node.value;
       }
-    };
-    return find(this.tree, this.planes);
+    }
   }
 }
 
