@@ -22,15 +22,20 @@ class PlutSearch {
 
   run(image) {
     const result = Array(image.length);
+    let pixel;
+    let rg, rb, gb;
+    let d1, d2, d3;
+    const { RGLut, RBLut, GBLut } = this; 
+    const { palette } = this;
     for ( let i = 0; i < image.length; ++i ) {
-      const pixel = image[i];
-      const rg = this.RGLut[pixel.red][pixel.green];
-      const rb = this.RBLut[pixel.red][pixel.blue];
-      const gb = this.RBLut[pixel.green][pixel.blue];
+      pixel = image[i];
+      rg = RGLut[pixel.red][pixel.green];
+      rb = RBLut[pixel.red][pixel.blue];
+      gb = GBLut[pixel.green][pixel.blue];
 
-      const d1 = this.palette[rg].distance(pixel);
-      const d2 = this.palette[rb].distance(pixel);
-      const d3 = this.palette[gb].distance(pixel);
+      d1 = palette[rg].distance(pixel);
+      d2 = palette[rb].distance(pixel);
+      d3 = palette[gb].distance(pixel);
 
       if ( d1 < d2 && d1 < d3 ) {
         result[i] = rg;
