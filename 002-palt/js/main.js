@@ -42,7 +42,9 @@ function main(config) {
   })
   console.error(`init: ${initTime} ms`);
   console.error(`run: ${runTime} ms (${(runTime/image.length).toFixed(5)} ms per pixel)`)
-  console.log(result.join('\n'));
+  if ( !config.dry ) {
+    console.log(result.join('\n'));
+  }
 }
 
 module.exports = main;

@@ -9,9 +9,11 @@ const programName = Path.basename(process.argv[1]);
 
 if ( require.main == module ) {
   let config = require('yargs')
-  .usage(`usage: ${programName} --method <method> palette-file image-file`)
+  .usage(`usage: ${programName} --method <method> [options] palette-file image-file`)
   .demandOption('method')
   .choices('method', methods)
+  .boolean('dry')
+  .describe('dry', 'don\'t produce out. useful for lookin at stats.')
   .demandCommand(2, 'error: insufficent arguments')
   .epilog('License: Public Domain')
   .help('help')
