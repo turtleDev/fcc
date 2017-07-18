@@ -134,7 +134,7 @@ class FatKDTree {
       
       depth++;
 
-      if ( node.left && target[plane] < node.value[plane] ) {
+      if ( node.left && target[plane] <= node.value[plane] ) {
         node = node.left;
       } else if ( node.right ) {
         node = node.right
