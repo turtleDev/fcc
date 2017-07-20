@@ -4,7 +4,8 @@
   "description": "turtledev's submission for dh-fast-code-contest",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "rm -f output.data && node index.js --method plut palette.data image.data > output.data"
   },
   "author": "Saravjeet 'Aman' Singh",
   "license": "MIT",
