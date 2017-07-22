@@ -14,9 +14,9 @@ class Basic {
     for ( let i = 0; i < image.length; ++i ) {
       const pixel = image[i];
       let idx = 0;
-      let value = pixel.distance(this.palette[0]);
+      let value = pixel.distanceSquared(this.palette[0]);
       for ( let j = 0; j < this.palette.length; ++j ) {
-        const d =  pixel.distance(this.palette[j]);
+        const d =  pixel.distanceSquared(this.palette[j]);
         if ( d < value ) {
           idx = j;
           value = d;

@@ -28,6 +28,19 @@ class Pixel {
       Math.pow(Math.abs(this.blue - other.blue), 2)
     );
   }
+
+  /**
+   * return the squared distance between 2 pixel(s)
+   * @param {Pixel} other 
+   * @returns {Number}
+   */
+  distanceSquared(other) {
+    return (
+      Math.pow(Math.abs(this.red - other.red), 2) +
+      Math.pow(Math.abs(this.green - other.green), 2) +
+      Math.pow(Math.abs(this.blue - other.blue), 2)
+    );
+  }
 }
 
 module.exports = Pixel;
