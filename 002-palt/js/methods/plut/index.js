@@ -41,21 +41,21 @@ class PlutSearch {
 
       // inline
       tmp = palette[rg];
-      d1 = sqrt(
+      d1 = (
         Math.pow(Math.abs(tmp.red - pixel.red), 2) +
         Math.pow(Math.abs(tmp.green - pixel.green), 2) +
         Math.pow(Math.abs(tmp.blue - pixel.blue), 2)
       );
 
       tmp = palette[rb];
-      d2 = sqrt(
+      d2 = (
         Math.pow(Math.abs(tmp.red - pixel.red), 2) +
         Math.pow(Math.abs(tmp.green - pixel.green), 2) +
         Math.pow(Math.abs(tmp.blue - pixel.blue), 2)
       );
 
       tmp = palette[gb];
-      d3 = sqrt(
+      d3 = (
         Math.pow(Math.abs(tmp.red - pixel.red), 2) +
         Math.pow(Math.abs(tmp.green - pixel.green), 2) +
         Math.pow(Math.abs(tmp.blue - pixel.blue), 2)
@@ -63,12 +63,10 @@ class PlutSearch {
 
       if ( d1 < d2 && d1 < d3 ) {
         result[i] = rg;
-      } else if( d2 < d1 && d2 < d3 ) {
+      } else if( d2 < d3 ) {
         result[i] = rb;
-      } else if ( d3 < d1 && d3 < d2 ) {
-        result[i] = gb;
       } else {
-        result[i] = rb;
+        result[i] = gb;
       }
     }
 
