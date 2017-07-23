@@ -52,8 +52,8 @@ class KDTree {
        * left subtree, while points _greater than or equal_
        * to the current node lie on the right subtree.
        */
-      const left = points.slice(0, medianIdx);
-      const right = points.slice(medianIdx);
+      const left = points.filter(point => point[plane] < median[plane]);
+      const right = points.filter(point => point[plane] >= median[plane]);
 
       return new Node(
         median,
@@ -66,7 +66,9 @@ class KDTree {
   }
 
   /**
-   * find the nearest point to the target
+   * find the nearest point to the target.
+   * 
+   * This is not a true nearest neighbour search, just FYI
    * @param {Pixel} target 
    * @return {Pixel}
    */

@@ -1,17 +1,40 @@
 'use strict';
 
 const KDTree = require('./kd-tree');
+const Pixel = require('../../pixel');
 
 /**
- * kd-tree based nearest neighbour search 
+ * removes duplicates
+ * @param {Array<Pixel>} data 
  */
-class NNSearch {
+function uniq(data) {
+  const result = [];
+  data.forEach(datum => {
+    const found = result.find(candidate => 
+      candidate.red === datum.red && 
+      candidate.blue === datum.blue &&
+      candidate.green === datum.green
+    );
+    if ( !found ) {
+      result.push(datum);
+    }
+  });
+  return result;
+}
+
+/**
+ * kd-tree based pseudo-nearest neighbour search
+ */
+class BlindNNSearch {
   constructor() {
     this.searchTree = null;
-    this.palette = null
+    this.palette = null;
+    this.idxMap = null;
   }
   init(palette) {
-    this.searchTree = new KDTree(palette, ['red', 'green', 'blue']);
+    const searchSet = uniq(palette);
+    this.palette = palette;
+    this.searchTree = new KDTree(searchSet, ['red', 'green', 'blue']);
     this.idxMap = new Map();
     palette.forEach((palem, idx) => this.idxMap.set(palem, idx));
   }
@@ -25,4 +48,4 @@ class NNSearch {
   }
 }
 
-module.exports = NNSearch;
+module.exports = BlindNNSearch;
