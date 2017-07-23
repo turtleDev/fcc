@@ -4,9 +4,9 @@ const KDTree = require('./kd-tree');
 const { uniq } = require('../../utils');
 
 /**
- * kd-tree based pseudo-nearest neighbour search
+ * kd-tree based nearest neighbour search
  */
-class BlindNNSearch {
+class NNSearch {
   constructor() {
     this.searchTree = null;
     this.palette = null;
@@ -29,4 +29,4 @@ class BlindNNSearch {
   }
 }
 
-module.exports = BlindNNSearch;
+module.exports = NNSearch;

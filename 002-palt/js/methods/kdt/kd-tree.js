@@ -2,6 +2,19 @@
 
 const Pixel = require('../../pixel');
 
+
+class NearestNeighbour {
+  /**
+   * An interface representing the current best search candidate.
+   * @param {Pixel} point 
+   * @param {Number} distance 
+   */
+  constructor(point, distance) {
+    this.point = point;
+    this.distance = distance;
+  }
+}
+
 /**
  * @class Node
  */
@@ -22,8 +35,7 @@ class Node {
 /**
  * @class KDTree
  * 
- * note: this kd tree doesn't store points in internal nodes
- * for the purpose of lookup/search.
+ * The tree _does_ store points in internal nodes for lookup.
  */
 class KDTree {
   /**
@@ -51,12 +63,14 @@ class KDTree {
       const median = points[medianIdx];
 
       /**
-       * points smaller than the current node lie in the
+       * points smaller than the median/splitting node lie in the
        * left subtree, while points _greater than or equal_
        * to the current node lie on the right subtree.
+       * 
+       * the splitting node itself is not stored in any sub trees.
        */
       const left = points.filter(point => point[plane] < median[plane]);
-      const right = points.filter(point => point[plane] >= median[plane]);
+      const right = points.filter(point => point[plane] >= median[plane] && point != median);
 
       return new Node(
         median,
@@ -71,30 +85,25 @@ class KDTree {
   /**
    * find the nearest point to the target.
    * 
-   * This is not a true nearest neighbour search, just FYI
    * @param {Pixel} target 
    * @return {Pixel}
    */
   findNN(target) {
-    let depth = 0;
-    let node = this.tree;
-    let planes = this.planes;
-    let planeIdx, plane;
-    while ( true ) {
-      planeIdx = depth % planes.length;
-      plane = planes[planeIdx];
+    const find = (node, depth = 0) => {
+      const planeIdx = depth % this.planes.length;
+      const plane = this.planes[planeIdx];
 
-      // increment depth
       depth++;
 
       if ( node.left && target[plane] < node.value[plane] ) {
-        node = node.left;
+        return find(node.left, depth);
       } else if ( node.right ) {
-        node = node.right
+        return find(node.right, depth);
       } else {
         return node.value;
       }
     }
+    return find(this.tree);
   }
 }
 
