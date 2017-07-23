@@ -89,6 +89,8 @@ class KDTree {
    * @return {Pixel}
    */
   findNN(target) {
+    const nn = new NearestNeighbour(null, -1);
+
     const find = (node, depth = 0) => {
       const planeIdx = depth % this.planes.length;
       const plane = this.planes[planeIdx];
@@ -96,14 +98,47 @@ class KDTree {
       depth++;
 
       if ( node.left && target[plane] < node.value[plane] ) {
-        return find(node.left, depth);
+        find(node.left, depth);
+
+        // is the current node closer to query?
+        if ( target.distanceSquared(node.value) < nn.distance ) {
+          nn.pixel = node.value;
+          nn.distance = target.distanceSquared(node.value);
+        }
+
+        // should we transverse the other sub-tree?
+        if ( Math.pow(target[plane] - node.value[plane], 2) < nn.distance && node.right ) {
+          find(node.right, depth);
+        }
       } else if ( node.right ) {
-        return find(node.right, depth);
+
+        find(node.right, depth);
+
+        // is the current node closer to query?
+        if ( target.distanceSquared(node.value) < nn.distance ) {
+          nn.pixel = node.value;
+          nn.distance = target.distanceSquared(node.value);
+        }
+
+        // should we transverse the other sub-tree?
+        if ( Math.pow(target[plane] - node.value[plane], 2) < nn.distance && node.left ) {
+          find(node.right, depth);
+        }
+
       } else {
-        return node.value;
+        if ( !nn.pixel || nn.distance > target.distanceSquared(node.value) ) {
+          nn.pixel = node.value;
+          nn.distance = target.distanceSquared(nn.pixel);
+        }
+        return;
       }
     }
-    return find(this.tree);
+    
+    // begin processing the tree
+    find(this.tree);
+
+    // return the result;
+    return nn.pixel;
   }
 }
 
