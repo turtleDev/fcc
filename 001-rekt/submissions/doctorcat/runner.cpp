@@ -114,10 +114,10 @@ int main(int argc, char *argv[])
   if(sTest == sResults)
   {
     cerr << "OK" << endl;
-    long long nano = chrono::duration_cast<std::chrono::nanoseconds>(tmElapsed).count();
-    double ms = nano/1000000.0F;
-    cerr << ms << " ms elapsed" << endl;
-    cerr << (ms/nRects) << " ms per rect" << endl;
+    long long microseconds = chrono::duration_cast<std::chrono::microseconds>(tmElapsed).count();
+    long ms = microseconds/1000;
+    cerr << microseconds/1000 << " ms elapsed" << endl;
+    cerr << float(ms)/nRects << " ms per rect" << endl;
   }
   else
   {
