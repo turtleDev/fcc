@@ -40,4 +40,5 @@ Some other things that were in the funnel, but never got implemented:
 * Dithering
 
 blind-kdt gives the best results under realtime constraints, for ahead of time preparation, nothing beats the plut.
+If performance is not the primary consideration, then k-d tree (with proper NN search) produces the best output, in the fastest time.
 
